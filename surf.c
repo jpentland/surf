@@ -245,7 +245,7 @@ static void clickexternplayer(Client *c, const Arg *a, WebKitHitTestResult *h);
 
 static char winid[64];
 static char togglestats[12];
-static char pagestats[2];
+static char *pagestats = "";
 static Atom atoms[AtomLast];
 static Window embed;
 static int showxid;
@@ -686,10 +686,9 @@ void
 getpagestats(Client *c)
 {
 	if (c->https)
-		pagestats[0] = (c->tlserr || c->insecure) ?  'U' : 'T';
+		pagestats = (c->tlserr || c->insecure) ?  "\uf09c" : "\uf023";
 	else
-		pagestats[0] = '-';
-	pagestats[1] = '\0';
+		pagestats = "-";
 }
 
 WebKitCookieAcceptPolicy
