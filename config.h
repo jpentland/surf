@@ -133,6 +133,7 @@ static SearchEngine searchengines[] = {
 	{ "aur", "https://aur.archlinux.org/packages/?O=0&K=%s" },
 	{ "r","https://reddit.com/r/%s" },
 	{ "w","https://en.wikipedia.org/wiki/%s" },
+	{ "y","https://www.youtube.com/results?search_query=%s" },
 };
 
 #define MODKEY GDK_CONTROL_MASK
