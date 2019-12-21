@@ -1992,7 +1992,12 @@ find(Client *c, const Arg *a)
 void
 insert(Client *c, const Arg *a)
 {
-		insertmode = (a->i);
+	if (a->i == 1) {
+		spawn(c, &(Arg)STATUS("print insert mode"));
+	} else {
+		spawn(c, &(Arg)STATUS("exit"));
+	}
+	insertmode = (a->i);
 }
 
 void
