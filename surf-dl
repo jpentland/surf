@@ -1,0 +1,16 @@
+#!/bin/sh
+useragent=$1; shift
+cookiefile=$1; shift
+referer=$1; shift
+uri=$1; shift
+filename=$(basename $uri)
+
+DIR_FILE=/tmp/surfdl
+ranger --choosedir=$DIR_FILE --show-only-dirs
+pushd $(cat $DIR_FILE)
+curl -g -L -J -O -A "$useragent" -b "$cookiefile" -c "$cookiefile" -e "$referrer" "$uri" &&
+	echo "File downloaded to $(cat $DIR_FILE)/$(basename $filename)" ||
+	echo "Download failed"
+popd
+echo "Press RETURN to exit"
+read
