@@ -58,6 +58,8 @@ install: all
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf
 	cp -f surf-dl $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-dl
+	cp -f surf-status $(DESTDIR)$(PREFIX)/bin
+	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf-status
 	mkdir -p $(DESTDIR)$(LIBDIR)
 	cp -f $(WLIB) $(DESTDIR)$(LIBDIR)
 	for wlib in $(WLIB); do \
