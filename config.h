@@ -76,6 +76,13 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
         } \
 }
 
+/* STATUS(command) */
+#define STATUS(c) { \
+	.v = (const char *[]){ "surf-status", \
+	     winid, c, NULL \
+	} \
+}
+
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(u, r) { \
         .v = (const char *[]){ "st", "-e", "/bin/sh", \
