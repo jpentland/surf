@@ -1,16 +1,61 @@
-#!/bin/sh
+#!/bin/sh -x
+HISTORY=~/.surf/dl-history
+LOCATIONS=~/.surf/dl-locations
+HIST_LEN=10
+
 useragent=$1; shift
 cookiefile=$1; shift
 referer=$1; shift
 uri=$1; shift
-filename=$(basename $uri)
+filename=$(basename $uri | sed 's/[?#].*//')
+dir_file=/tmp/$filename-$(date "+%s").dldir
 
-DIR_FILE=/tmp/surfdl
-ranger --choosedir=$DIR_FILE --show-only-dirs
-pushd $(cat $DIR_FILE)
-curl -g -L -J -O -A "$useragent" -b "$cookiefile" -c "$cookiefile" -e "$referrer" "$uri" &&
-	echo "File downloaded to $(cat $DIR_FILE)/$(basename $filename)" ||
-	echo "Download failed"
-popd
+if [ -f $HISTORY ]; then
+	cp $HISTORY $HISTORY.tmp
+	tail -n$HIST_LEN $HISTORY.tmp | sort -u > $HISTORY
+fi
+
+if ! [ -f $LOCATIONS ]; then
+	cat > $LOCATIONS <<EOF
+$HOME/Documents
+$HOME/Downloads
+$HOME/Music
+$HOME/Pictures
+$HOME/Videos
+$HOME/script
+EOF
+fi
+
+touch $HISTORY $LOCATIONS
+location=$(cat $HISTORY $LOCATIONS | sort -u | fzf --prompt "Choose location, or ESC for browser >")
+if [ -z "$location" ]; then
+	ranger --choosedir=$dir_file --cmd="chain set preview_files false; set preview_directories false"
+	location=$(cat $dir_file)
+	rm $dir_file
+fi
+echo $location >> $HISTORY
+
+echo "Downloading to $location"
+
+if [ -e $location/$filename ]; then
+	echo -e "\033[1;33mFile already exists, renaming\033[0m"
+	ext=$(sed 's/.*\.\(.*\)$/\1/' <<< "$filename")
+	filename=$(basename -s .$ext $filename).1.$ext
+fi
+
+read -e -p "Choose filename: " -i "$filename" filename
+
+wget -c \
+	-U "$useragent" \
+	--load-cookies "$cookiefile" \
+	--referer="$referrer" \
+	-O $location/$filename \
+	$uri
+
+if [ "$?" != "0" ]; then
+	echo -e "\033[0;31mDownload failed (status $?)\033[0m"
+else
+	echo -e "\033[0;32mFile downloaded to $location/$filename\033[0m"
+fi
 echo "Press RETURN to exit"
 read
