@@ -115,6 +115,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  */
 static SiteSpecific styles[] = {
 	/* regexp               file in $styledir */
+	{ ".*github.com.*",		"github-dark.css" },
 	{ ".*",                 "default.css" },
 };
 
