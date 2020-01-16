@@ -73,6 +73,18 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
              "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" " \
              "| dmenu -p \"$4\" -w $1)\" && xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
              "surf-setprop", winid, r, s, p, NULL \
+	} \
+}
+
+/* GO(readprop, setprop, prompt)*/
+#define GO(r, s, p) { \
+        .v = (const char *[]){ "/bin/sh", "-c", \
+             "prop=\"$(printf '%b # Current URL\\n' \"$(xprop -id $1 $2 " \
+             "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" " \
+             "| cat - ~/.config/bookmarks.txt " \
+             "| dmenu -i -l 10 -p \"$4\" -w $1 " \
+	     "| sed 's/# .*$//' )\" && xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
+             "surf-setprop", winid, r, s, p, NULL \
         } \
 }
 
@@ -155,7 +167,7 @@ static SearchEngine searchengines[] = {
  */
 static Key keys[] = {
 	/* modifier              keyval          function    arg */
-	{ 0,                     GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
+	{ 0,                     GDK_KEY_g,      spawn,      GO("_SURF_URI", "_SURF_GO", PROMPT_GO) },
 	{ 0,                     GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 	{ 0,                     GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 
