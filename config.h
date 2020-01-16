@@ -143,6 +143,7 @@ static SearchEngine searchengines[] = {
 	{ "y","https://www.youtube.com/results?search_query=%s" },
 	{ "c", "https://crates.io/search?q=%s" },
 	{ "a", "https://www.amazon.de/s?k=%s" },
+	{ "down", "https://www.downforeveryoneorjustme.com/%s" },
 };
 
 #define MODKEY GDK_CONTROL_MASK
