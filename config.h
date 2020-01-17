@@ -158,6 +158,7 @@ static SearchEngine searchengines[] = {
 	{ "c", "https://crates.io/search?q=%s" },
 	{ "a", "https://www.amazon.de/s?k=%s" },
 	{ "down", "https://www.downforeveryoneorjustme.com/%s" },
+	{ "android", "https://developer.android.com/s/results?q=%s" },
 };
 
 #define MODKEY GDK_CONTROL_MASK
