@@ -76,7 +76,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define GO { \
 	.v = (const char*[]){ "/bin/sh", "-c", \
 		"prop=\"$(bookmark --current \"$(xprop -id $1 _SURF_URI " \
-             	"| sed \"s/^_SURF_URI(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\")\" " \
+		"| sed \"s/^_SURF_URI(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" -w $1)\"" \
 		" && xprop -id $1 -f _SURF_GO 8s -set _SURF_GO \"$prop\"", \
 		"surf-go", winid, NULL \
 	} \
@@ -86,7 +86,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define BOOKMARK { \
 	.v = (const char*[]){ "/bin/sh", "-c", \
 		"bookmark --current \"$(xprop -id $1 _SURF_URI " \
-             	"| sed \"s/^_SURF_URI(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" -n ", \
+		"| sed \"s/^_SURF_URI(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" -w $1 -n ", \
 		"surf-bookmark", winid, NULL \
 	} \
 }
