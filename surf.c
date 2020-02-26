@@ -173,11 +173,12 @@ static void evalscript(Client *c, const char *jsstr, ...);
 static void updatewinid(Client *c);
 static void handleplumb(Client *c, const char *uri);
 static void newwindow(Client *c, const Arg *a, int noembed);
-static void spawn(Client *c, const Arg *a);
+static pid_t spawn(Client *c, const Arg *a);
 static void msgext(Client *c, char type, const Arg *a);
 static void destroyclient(Client *c);
 static void cleanup(void);
 static int insertmode = 0;
+static pid_t insertstatus = 0;
 
 /* GTK/WebKit */
 static WebKitWebView *newview(Client *c, WebKitWebView *rv);
@@ -1043,10 +1044,11 @@ newwindow(Client *c, const Arg *a, int noembed)
 	spawn(c, &arg);
 }
 
-void
+pid_t
 spawn(Client *c, const Arg *a)
 {
-	if (fork() == 0) {
+	pid_t pid = fork();
+	if (pid == 0) {
 		if (dpy)
 			close(ConnectionNumber(dpy));
 		close(spair[0]);
@@ -1057,6 +1059,7 @@ spawn(Client *c, const Arg *a)
 		perror(" failed");
 		exit(1);
 	}
+	return pid;
 }
 
 void
@@ -1968,12 +1971,34 @@ find(Client *c, const Arg *a)
 }
 
 void
+insert_status_start(Client *c) {
+	printf("insert_status_start %d\n", insertstatus);
+	if (insertstatus == 0) {
+		insertstatus = spawn(c, &(Arg) {
+			.v = (const char*[]) { "/bin/sh", "-c",
+			"st -g 250x1 -w $1 -e /bin/sh -c \"read -p INSERT\"",
+			"surf-status", winid, NULL
+			}
+		});
+	}
+}
+
+void
+insert_status_kill() {
+	printf("insert_status_kill %d\n", insertstatus);
+	if (insertstatus != 0) {
+		kill(insertstatus, 9);
+		insertstatus = 0;
+	}
+}
+
+void
 insert(Client *c, const Arg *a)
 {
 	if (a->i == 1) {
-		spawn(c, &(Arg)STATUS("print insert mode"));
+		insert_status_start(c);
 	} else {
-		spawn(c, &(Arg)STATUS("exit"));
+		insert_status_kill();
 	}
 	insertmode = (a->i);
 }
