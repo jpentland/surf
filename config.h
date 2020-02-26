@@ -145,25 +145,6 @@ static SiteSpecific certs[] = {
 	{ "://suckless\\.org/", "suckless.org.crt" },
 };
 
-/*
- * Search engines
- */
-static SearchEngine searchengines[] = {
-	{ "g",   "http://www.google.de/search?q=%s"   },
-	{ "d",   "http://www.duckduckgo.com/?q=%s" },
-	{ "s",   "http://startpage.com/do/search?q=%s" },
-	{ "leo", "http://dict.leo.org/ende?search=%s" },
-	{ "arch","https://wiki.archlinux.org/index.php?search=%s" },
-	{ "aur", "https://aur.archlinux.org/packages/?O=0&K=%s" },
-	{ "r","https://reddit.com/r/%s" },
-	{ "w","https://en.wikipedia.org/wiki/%s" },
-	{ "y","https://www.youtube.com/results?search_query=%s" },
-	{ "c", "https://crates.io/search?q=%s" },
-	{ "a", "https://www.amazon.de/s?k=%s" },
-	{ "down", "https://www.downforeveryoneorjustme.com/%s" },
-	{ "android", "https://developer.android.com/s/results?q=%s" },
-};
-
 #define MODKEY GDK_CONTROL_MASK
 
 /* hotkeys */
