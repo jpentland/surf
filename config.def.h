@@ -57,10 +57,6 @@ static Parameter defconfig[ParameterLast] = {
 };
 
 static UriParameters uriparams[] = {
-	{ "(://|\\.)suckless\\.org(/|$)", {
-	  [JavaScript] = { { .i = 0 }, 1 },
-	  [Plugins]    = { { .i = 0 }, 1 },
-	}, },
 };
 
 /* default window size: width, height */
@@ -79,22 +75,33 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
              "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" " \
              "| dmenu -p \"$4\" -w $1)\" && xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
              "surf-setprop", winid, r, s, p, NULL \
-        } \
+	} \
 }
 
-/* STATUS(command) */
-#define STATUS(c) { \
-	.v = (const char *[]){ "surf-status", \
-	     winid, c, NULL \
+/* GO */
+#define GO { \
+	.v = (const char*[]){ "/bin/sh", "-c", \
+		"prop=\"$(bookmark --current \"$(xprop -id $1 _SURF_URI " \
+		"| sed \"s/^_SURF_URI(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" -w $1)\"" \
+		" && xprop -id $1 -f _SURF_GO 8s -set _SURF_GO \"$prop\"", \
+		"surf-go", winid, NULL \
+	} \
+}
+
+/* BOOKMARK */
+#define BOOKMARK { \
+	.v = (const char*[]){ "/bin/sh", "-c", \
+		"bookmark --current \"$(xprop -id $1 _SURF_URI " \
+		"| sed \"s/^_SURF_URI(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" -w $1 -n ", \
+		"surf-bookmark", winid, NULL \
 	} \
 }
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(u, r) { \
-        .v = (const char *[]){ "st", "-e", "/bin/sh", "-c",\
-             "curl -g -L -J -O -A \"$1\" -b \"$2\" -c \"$2\"" \
-             " -e \"$3\" \"$4\"; read", \
-             "surf-download", useragent, cookiefile, r, u, NULL \
+        .v = (const char *[]){ "st", "-e", "/bin/sh", \
+	     "surf-dl", \
+             useragent, cookiefile, r, u, NULL \
         } \
 }
 
@@ -122,6 +129,9 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  */
 static SiteSpecific styles[] = {
 	/* regexp               file in $styledir */
+	{ ".*github.com.*",		"github-dark.css" },
+	{ ".*jira\\..*", "jira.css"},
+	{ ".*bbc.com.*", "bbc.css"},
 	{ ".*",                 "default.css" },
 };
 
@@ -143,7 +153,8 @@ static SiteSpecific certs[] = {
  */
 static Key keys[] = {
 	/* modifier              keyval          function    arg */
-	{ 0,                     GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
+	{ 0,                     GDK_KEY_g,      spawn,      GO },
+	{ 0,                     GDK_KEY_s,      spawn,      BOOKMARK },
 	{ 0,                     GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 	{ 0,                     GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
 
@@ -202,7 +213,7 @@ static Key keys[] = {
 /* target can be OnDoc, OnLink, OnImg, OnMedia, OnEdit, OnBar, OnSel, OnAny */
 static Button buttons[] = {
 	/* target       event mask      button  function        argument        stop event */
-	{ OnLink,       0,              2,      clicknewwindow, { .i = 0 },     1 },
+	{ OnLink,       0,              2,      clicknewwindow, { .i = 1 },     1 },
 	{ OnLink,       MODKEY,         2,      clicknewwindow, { .i = 1 },     1 },
 	{ OnLink,       MODKEY,         1,      clicknewwindow, { .i = 1 },     1 },
 	{ OnAny,        0,              8,      clicknavigate,  { .i = -1 },    1 },
