@@ -10,6 +10,11 @@ uri=$1; shift
 filename=$(basename $uri | sed 's/[?#].*//')
 dir_file=/tmp/$filename-$(date "+%s").dldir
 
+function cmd {
+	echo -e "\033[1;34m$@\033[0m"
+	eval $@
+}
+
 if [ -f $HISTORY ]; then
 	cp $HISTORY $HISTORY.tmp
 	tail -n$HIST_LEN $HISTORY.tmp | sort -u > $HISTORY
@@ -45,12 +50,12 @@ fi
 
 read -e -p "Choose filename: " -i "$filename" filename
 
-wget -c \
-	-U "$useragent" \
-	--load-cookies "$cookiefile" \
-	--referer="$referrer" \
-	-O $location/$filename \
-	$uri
+cmd wget -c \
+	-U \"$useragent\" \
+	--load-cookies \"$cookiefile\" \
+	--referer=\"$referrer\" \
+	-O \"$location/$filename\" \
+	\"$uri\"
 
 if [ "$?" != "0" ]; then
 	echo -e "\033[0;31mDownload failed (status $?)\033[0m"
