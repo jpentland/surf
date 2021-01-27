@@ -236,6 +236,7 @@ static void togglecookiepolicy(Client *c, const Arg *a);
 static void toggleinspector(Client *c, const Arg *a);
 static void find(Client *c, const Arg *a);
 static void insert(Client *c, const Arg *a);
+static void open_firefox(Client *c, const Arg *a);
 
 /* Buttons */
 static void clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h);
@@ -1060,6 +1061,12 @@ spawn(Client *c, const Arg *a)
 		exit(1);
 	}
 	return pid;
+}
+
+void open_firefox(Client *c, const Arg *a) {
+	spawn(c, &(Arg) {
+		.v = (const char*[]) { "firefox", "--new-window", geturi(c), NULL }
+	});
 }
 
 void
